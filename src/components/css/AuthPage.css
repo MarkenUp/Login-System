@@ -1,0 +1,54 @@
+.auth-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.auth-card {
+  display: flex;
+  width: 200%;
+  transition: transform 0.5s ease-in-out;
+}
+
+.auth-card.show-login {
+  transform: translateX(0);
+}
+
+.auth-card.show-register {
+  transform: translateX(-50%);
+}
+
+.login-component,
+.register-component {
+  width: 70%;
+  min-width: 50%;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+input,
+select {
+  margin: 10px 0;
+  padding: 10px;
+  width: 80%;
+}
+
+button {
+  padding: 10px 20px;
+  margin-top: 20px;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+}

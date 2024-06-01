@@ -1,0 +1,13 @@
+.note-card {
+  background: linear-gradient(135deg, #fffbda 25%, #fff7c2);
+  border: 1px solid #f9e076;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 16rem; /* 64 Tailwind units */
+  height: 16rem; /* 64 Tailwind units */
+  transform: rotate(-2deg);
+  transition: transform 0.2s;
+}
+
+.note-card:hover {
+  transform: rotate(0deg);
+}
