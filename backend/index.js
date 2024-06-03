@@ -1,10 +1,13 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import dotenv from "dotenv";
 import loginRouter from "./routes/login.js";
 import registerRouter from "./routes/register.js";
 import adminRouter from "./routes/admin.js";
 import generalRouter from "./routes/general.js";
+
+dotenv.config();
 
 const app = express();
 
@@ -23,6 +26,9 @@ app.use("/api/auth", registerRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/general", generalRouter);
 
-app.listen(8800, () => {
-  console.log(`Server is running on port 8800`);
+// eslint-disable-next-line no-undef
+const PORT = process.env.PORT || 8800;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

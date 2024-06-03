@@ -16,6 +16,8 @@ const Login: React.FC<LoginProps> = ({ toggleView }) => {
   );
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -24,6 +26,14 @@ const Login: React.FC<LoginProps> = ({ toggleView }) => {
   }, [isAuthenticated, navigate]);
 
   const handleLogin = async () => {
+    if (!username || !password) {
+      setError("Username and password are required");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
     try {
       const response = await fetch("http://localhost:8800/api/auth/login", {
         method: "POST",
@@ -32,6 +42,9 @@ const Login: React.FC<LoginProps> = ({ toggleView }) => {
         },
         body: JSON.stringify({ username, password }),
       });
+
+      setLoading(false);
+
       if (response.ok) {
         const data = await response.json();
         if (data.userId !== undefined && data.userId !== null) {
@@ -48,9 +61,12 @@ const Login: React.FC<LoginProps> = ({ toggleView }) => {
           console.error("Login response does not contain userId");
         }
       } else {
+        setError("Invalide username or password");
         console.error("Login failed with status:", response.status);
       }
     } catch (error) {
+      setLoading(false);
+      setError("An error occured during login");
       console.error("Error during login:", error);
     }
   };
@@ -60,6 +76,7 @@ const Login: React.FC<LoginProps> = ({ toggleView }) => {
       {!isAuthenticated && (
         <div className="flex flex-col items-center">
           <h1 className="text-3xl font-bold mb-8">Login</h1>
+          {error && <p className="text-red-500 mb-4">{error}</p>}
           <input
             type="text"
             value={username}
@@ -77,8 +94,9 @@ const Login: React.FC<LoginProps> = ({ toggleView }) => {
           <button
             onClick={handleLogin}
             className="w-full py-2 mb-4 text-white bg-darkblue rounded hover:bg-darkblueh font-semibold hover:shadow-md mt-7"
+            disabled={loading}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
           <p className="text-sm">
             Not yet registered?{" "}

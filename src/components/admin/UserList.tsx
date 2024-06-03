@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import {
   FaArrowDown91,
@@ -8,6 +8,9 @@ import {
 } from "react-icons/fa6";
 import Modal from "../modal/Modal";
 import { IoClose } from "react-icons/io5";
+import { RootState } from "../../app/store";
+import { fetchUsers, updateUser } from "../../features/loginAuth/userSlice";
+import { useAppDispatch, useAppSelector } from "../../features/hooks";
 
 interface User {
   Id: number;
@@ -16,10 +19,10 @@ interface User {
 }
 
 const UserList: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [roles, setRoles] = useState<string[]>([]);
+  const dispatch = useAppDispatch();
+  const { users, roles, loading, error } = useAppSelector(
+    (state: RootState) => state.users
+  );
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [sortColumn, setSortColumn] = useState<string>("Id");
   const [sortDirection, setSortDirection] = useState<string>("asc");
@@ -30,26 +33,9 @@ const UserList: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [role, setRole] = useState<string>("");
 
-  const fetchUsers = useCallback(async () => {
-    try {
-      const response = await fetch("http://localhost:8800/api/admin/users");
-      if (!response.ok) {
-        throw new Error("Failed to fetch users");
-      }
-      const data: { users: User[] } = await response.json();
-      setUsers(data.users);
-      const roles = Array.from(new Set(data.users.map((user) => user.Role)));
-      setRoles(roles);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    dispatch(fetchUsers());
+  }, [dispatch]);
 
   const handleRoleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedRole(event.target.value);
@@ -115,31 +101,8 @@ const UserList: React.FC = () => {
 
   const handleSaveUser = async () => {
     if (editingUser) {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `http://localhost:8800/api/admin/users/${editingUser.Id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              Username: username,
-              Role: role,
-            }),
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Failed to update user");
-        }
-        await fetchUsers();
-        closeModal();
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
+      await dispatch(updateUser({ id: editingUser.Id, username, role }));
+      closeModal();
     }
   };
 
