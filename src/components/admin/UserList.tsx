@@ -5,12 +5,14 @@ import {
   FaArrowDownZA,
   FaArrowUp19,
   FaArrowUpAZ,
+  FaCheck,
 } from "react-icons/fa6";
 import Modal from "../modal/Modal";
 import { IoClose } from "react-icons/io5";
 import { RootState } from "../../app/store";
 import { fetchUsers, updateUser } from "../../features/loginAuth/userSlice";
 import { useAppDispatch, useAppSelector } from "../../features/hooks";
+import "../css/UserList.css";
 
 interface User {
   Id: number;
@@ -32,6 +34,9 @@ const UserList: React.FC = () => {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [username, setUsername] = useState<string>("");
   const [role, setRole] = useState<string>("");
+  const [isEditable, setIsEditable] = useState<boolean>(false);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
 
   useEffect(() => {
     dispatch(fetchUsers());
@@ -91,6 +96,7 @@ const UserList: React.FC = () => {
     setEditingUser(user);
     setUsername(user.Username);
     setRole(user.Role);
+    setIsEditable(false);
     setIsModalOpen(true);
   };
 
@@ -102,7 +108,13 @@ const UserList: React.FC = () => {
   const handleSaveUser = async () => {
     if (editingUser) {
       await dispatch(updateUser({ id: editingUser.Id, username, role }));
+      setIsSuccess(true);
+      setShowSuccess(true);
       closeModal();
+      setTimeout(() => {
+        setShowSuccess(false);
+        setTimeout(() => setIsSuccess(false), 500);
+      }, 3000);
     }
   };
 
@@ -116,6 +128,18 @@ const UserList: React.FC = () => {
 
   return (
     <div className="ml-3 mt-5">
+      {isSuccess && (
+        <div
+          className={`success-message w-full bg-darkblue p-2 rounded flex text-lg justify-start items-center ${
+            showSuccess ? "slide-down" : "slide-up"
+          }`}
+        >
+          <FaCheck className="ml-3" />
+          <p className="ml-1 text-white font-semibold">
+            User updated succesfully!
+          </p>
+        </div>
+      )}
       <h1 className="text-4xl text-white font-bold mb-8">Users</h1>
       <div className="mb-4 flex items-center justify-between">
         <div className="w-5/12 flex items-center justify-start">
@@ -212,7 +236,7 @@ const UserList: React.FC = () => {
               >
                 <button
                   onClick={() => openEditModal(user)}
-                  className="bg-green-600 p-2 text-white rounded-lg hover:bg-green-700"
+                  className="bg-darkblue p-2 text-white rounded-lg hover:bg-darkblueh"
                 >
                   <FaEdit />
                 </button>
@@ -222,39 +246,57 @@ const UserList: React.FC = () => {
         </tbody>
       </table>
       <Modal isOpen={isModalOpen}>
-        <div className="flex jusitfy-end items-center">
-          <button onClick={closeModal}>
+        <div className="flex justify-end items-center">
+          <button
+            onClick={closeModal}
+            className="text-black bg-white text-lg p-1 hover:bg-gray-200 rounded-full"
+          >
             <IoClose />
           </button>
         </div>
         <div className="flex justify-center items-center">
-          <h2 className="text-xl font-semibold mb-4">Edit User</h2>
+          <h2 className="text-xl font-semibold mb-5">Edit User</h2>
         </div>
-        <div className="mb-4">
+        <div className="mb-5">
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full p-2 mb-2 border text-gray-600 font-semibold border-gray-300 rounded"
+            disabled={!isEditable}
+            className="w-full p-2 mb-4 border text-gray-600 font-semibold border-gray-300 rounded"
           />
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="border px-2 py-1 w-full text-gray-700"
+            disabled={!isEditable}
+            className="border font-semibold px-2 py-1 w-full text-gray-700 rounded"
           >
             {roles.map((role) => (
-              <option value={role} key={role}>
+              <option
+                value={role}
+                key={role}
+                className="font-semibold text-gray-600"
+              >
                 {role}
               </option>
             ))}
           </select>
-          <div className="flex justify-center">
-            <button
-              onClick={handleSaveUser}
-              className="px-4 py-2 bg-blue-500 text-white rounded"
-            >
-              Save
-            </button>
+          <div className="flex justify-center mt-5">
+            {isEditable ? (
+              <button
+                onClick={handleSaveUser}
+                className="px-4 py-2 bg-darkblue hover:bg-darkblueh font-semibold text-white rounded"
+              >
+                Save
+              </button>
+            ) : (
+              <button
+                onClick={() => setIsEditable(true)}
+                className="px-4 py-2 bg-darkblue hover:bg-darkblueh font-semibold text-white rounded"
+              >
+                Edit
+              </button>
+            )}
           </div>
         </div>
       </Modal>

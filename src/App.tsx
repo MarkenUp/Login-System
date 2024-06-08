@@ -17,6 +17,8 @@ import UserList from "./components/admin/UserList";
 import PrivateRoute from "./components/PrivateRoute";
 import UserDashboard from "./components/users/UserDashboard";
 import Memo from "./components/general/Memo";
+import ClientList from "./components/admin/ClientList";
+import AddClient from "./components/admin/AddClient";
 
 const AuthRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useSelector(
@@ -126,6 +128,33 @@ const App: React.FC = () => {
                     ) : (
                       <div>Loading...</div>
                     )}
+                  </div>
+                </div>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/clients"
+            element={
+              <PrivateRoute>
+                <div className="flex w-full h-lvh">
+                  <Sidebar />
+                  <div className="flex-1 p-4">
+                    <ClientList />
+                  </div>
+                </div>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/clients/new-client"
+            element={
+              <PrivateRoute>
+                <div className="flex w-full h-lvh">
+                  <Sidebar />
+                  <div className="flex-1 p-4">
+                    <AddClient />
                   </div>
                 </div>
               </PrivateRoute>

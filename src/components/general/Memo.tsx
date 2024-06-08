@@ -175,7 +175,7 @@ const Memo: React.FC<{ userId: number }> = ({ userId }) => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleEditMemo(memo)}
-                    className="bg-green-600 p-2 text-white rounded-lg hover:bg-green-700"
+                    className="bg-darkblue p-2 text-white rounded-lg hover:bg-darkblueh"
                   >
                     <FaEdit />
                   </button>
@@ -205,7 +205,7 @@ const Memo: React.FC<{ userId: number }> = ({ userId }) => {
           </button>
         </div>
         <div className="flex justify-center item-center">
-          <h2 className="text-xl font-semibold mb-4 text-black">Edit Memo</h2>
+          <h2 className="text-xl font-semibold mb-4 text-white">Edit Memo</h2>
         </div>
         <div className="mb-4">
           <input
@@ -225,7 +225,7 @@ const Memo: React.FC<{ userId: number }> = ({ userId }) => {
         <div className="flex items-center justify-center mt-4">
           <button
             onClick={handleSaveMemo}
-            className="px-4 py-2 bg-blue-500 text-white rounded-none"
+            className="px-4 py-2 bg-darkblue text-white rounded font-semibold hover:bg-darkblueh"
           >
             Update Memo
           </button>

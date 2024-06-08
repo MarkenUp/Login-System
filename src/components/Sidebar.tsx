@@ -6,6 +6,7 @@ import { logout } from "../features/loginAuth/authSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
 import { FaRegStickyNote } from "react-icons/fa";
+import { FaPerson } from "react-icons/fa6";
 
 const Sidebar: React.FC = () => {
   const dispatch = useDispatch();
@@ -69,6 +70,18 @@ const Sidebar: React.FC = () => {
               <FaRegStickyNote className="mr-1" />
               Memo
             </Link>
+          </li>
+          <li>
+            {roles.includes("Admin") && (
+              <Link
+                to="/clients"
+                className={`flex items-center py-2 px-4 text-white font-semibold text-lg ${isActive(
+                  "/clients"
+                )}`}
+              >
+                <FaPerson className="mr-1" /> Clients
+              </Link>
+            )}
           </li>
         </ul>
       </nav>

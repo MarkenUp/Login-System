@@ -84,4 +84,88 @@ router.put("/users/:id", async (req, res) => {
   }
 });
 
+// Fetch all the client data
+router.get("/clients", async (req, res) => {
+  try {
+    const pool = await poolPromise;
+    const result = await pool.request().query("SELECT * FROM Client");
+    const allClients = result.recordset;
+    res.status(200).json({ clients: allClients });
+  } catch (error) {
+    console.error("Error fetching clients:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Adding new Client
+router.post("/addClient", async (req, res) => {
+  const { CompanyName, CompanyAddress, ContactPerson, ContactNumber, Email } =
+    req.body;
+
+  if (!CompanyName || !CompanyAddress || !ContactPerson || !ContactNumber) {
+    return res
+      .status(400)
+      .json({ message: "All fields except Email are required." });
+  }
+
+  try {
+    const pool = await poolPromise;
+    await pool
+      .request()
+      .input("CompanyName", sql.NVarChar, CompanyName)
+      .input("CompanyAddress", sql.NVarChar, CompanyAddress)
+      .input("ContactPerson", sql.NVarChar, ContactPerson)
+      .input("ContactNumber", sql.NVarChar, ContactNumber)
+      .input("Email", sql.NVarChar, Email).query(`
+        INSERT INTO Client (CompanyName, CompanyAddress, ContactPerson, ContactNumber, Email)
+        VALUES (@CompanyName, @CompanyAddress, @ContactPerson, @ContactNumber, @Email)
+      `);
+    res.status(201).json({ message: "Client added successfully" });
+  } catch (error) {
+    console.error("Error adding client:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.put("/clients/:id", async (req, res) => {
+  const { id } = req.params;
+  const { CompanyName, CompanyAddress, ContactPerson, ContactNumber, Email } =
+    req.body;
+
+  try {
+    const pool = await poolPromise;
+    await pool
+      .request()
+      .input("Id", sql.Int, id)
+      .input("CompanyName", sql.NVarChar, CompanyName)
+      .input("CompanyAddress", sql.NVarChar, CompanyAddress)
+      .input("ContactPerson", sql.NVarChar, ContactPerson)
+      .input("ContactNumber", sql.NVarChar, ContactNumber)
+      .input("Email", sql.NVarChar, Email).query(`
+        UPDATE Client 
+        SET CompanyName = @CompanyName, CompanyAddress = @CompanyAddress, ContactPerson = @ContactPerson, ContactNumber = @ContactNumber, Email = @Email 
+        WHERE Id = @Id 
+      `);
+    res.status(201).json({ message: "Client edited succesfully" });
+  } catch (error) {
+    console.error("Error updating client:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.delete("/clients/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const pool = await poolPromise;
+    await pool
+      .request()
+      .input("Id", sql.Int, id)
+      .query("DELETE FROM Client WHERE Id = @Id");
+    res.status(200).json({ message: "Client deleted succesfully." });
+  } catch (error) {
+    console.error("Error deleting memo:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 export default router;
